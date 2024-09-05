@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shop-back
+  #namespace: # 네임스페이스 설정
+  labels:
+    app: shop-back
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shop-back  
+  strategy:
+    type: Recreate #pod 삭제 시 새 파드 생성
+  template:
+    metadata:
+      labels:
+        app: shop-back
+    spec:
+      containers:
+        - name: shop-back
+          image: cloudbreak6th/shop-back:v2.0
+          ports:
+            - containerPort: 8080  # 컨테이너 포트
+              protocol: TCP
+          env:
+            - name: MYSQL_HOST
+              value: coupon-mysql
+            - name: MYSQL_PORT
+              value: "3306"
+            - name: DATASOURCE_URL
+              value: jdbc:mysql://coupon-mysql:3306/coupon
+            - name: MYSQL_DATABASE
+              value: coupon
+            - name: MYSQL_USER
+              value: abcd
+            - name: MYSQL_PASSWORD
+              value: "1234"
+            - name: REDIS_HOST
+              value: coupon-redis
+            - name: REDIS_PORT
+              value: "6379"
+            - name: PROFILES_ACTIVE
+              value: docker
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: shop-back
+  #namespace:  # 네임스페이스 설정
+  labels:
+    app: shop-back
+spec:
+  ports:
+    - name: "http"
+      port: 8080  # 외부에서 노출할 포트
+      targetPort: 8080 # 컨테이너 내에서 사용하는 포트
+  selector:
+    app: shop-back
