@@ -1,0 +1,12 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: efs-sc2
+provisioner: efs.csi.aws.com
+parameters:
+  # 권한 설정
+  directoryPerms: "700"
+  fileSystemId: fs-091d05a7fa8ddec61
+  # 액세스 포인트 기반 프로비저닝
+  provisioningMode: efs-ap
+
